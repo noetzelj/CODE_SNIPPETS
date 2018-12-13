@@ -1,0 +1,26 @@
+// find the bearing and distance in meters from point 1 to 2,
+// using the equirectangular approximation
+// lat and lon are degrees*1.0e6, 10 cm precision
+// 
+// accurate bearings and distances between waypoints
+// using the equirectangular approximation
+// (good to roughly 100 km).
+
+float course_to(long lat1, long lon1, long lat2, long lon2, float* distance) {
+
+	float dlam,dphi,radius= 6371000.0;
+	
+	dphi = DEG2RAD*(lat1+lat2)*0.5e-6; //average latitude in radians
+	float cphi=cos(dphi);
+	
+	dphi = DEG2RAD*(lat2-lat1)*1.0e-6; //differences in degrees (to radians)
+	dlam = DEG2RAD*(lon2-lon1)*1.0e-6;
+
+	dlam *= cphi;  //correct for latitude
+
+	float bearing=RAD2DEG*atan2(dlam,dphi);
+	if(bearing<0) bearing=bearing+360.0;
+
+	*distance = radius * sqrt(dphi*dphi + dlam*dlam);
+	return bearing;
+}
